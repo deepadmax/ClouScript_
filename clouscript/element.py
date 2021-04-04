@@ -11,11 +11,20 @@ class Element:
         self.type = type_
         self.value = value
 
-    def __eq__(self, value):
+    def __repr__(self):
+        return f'{{{self.value}}}'
+
+    def __eq__(self, other):
         """
         If a string is provided:
             Check if element is a certain type
         If an element is provided:
             Check if the elements are equal in type and value
         """
-        return self.type == value
+
+        if type(other) is str:
+            return self.type == other
+
+        if type(other) is Element:
+            return self.type == other.type \
+              and self.value == other.value
