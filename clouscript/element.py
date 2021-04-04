@@ -7,5 +7,6 @@ class Element:
     All types of elements inherit from this class.
     """
     
-    def __init__(self, value):
+    def __init__(self, name, value):
+        self.name = name
         self.value = value
