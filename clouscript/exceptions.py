@@ -12,6 +12,9 @@ class MissingDelimiter(LexingError):
 class EmptySection(LexingError):
     """Found empty section while segmenting"""
 
+class NoMatch(LexingError):
+    """No lexing rule could be matched"""
+
 
 class ParsingError(ClouScriptException):
     """Elements are not compliant with parsing rules"""
