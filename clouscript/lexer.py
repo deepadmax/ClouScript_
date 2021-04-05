@@ -139,6 +139,10 @@ class Lexer:
         while i < len(string):
             # Set up the rest of the string for matching
             m = REMatcher(string[i:])
+            
+            # Set up type and value, plus match status
+            matched = False
+            type_, value = None, None
 
             # 1. Match with solids
             for regex, process in self.solids:
@@ -150,16 +154,17 @@ class Lexer:
                     # Move cursor along
                     i += len(m.group(0))
 
-                    # An element which has no type should be ignored
-                    # This should be used for comments and line breaks
-                    if type_ is None:
-                        continue
+                    matched = True
                     break
 
-            # If a match has been found already,
-            # yield and move onto next element
+            # If a match has been found already, yield it
             if type_ is not None:
                 yield Element(type_, value)
+
+            # Regardless of whether there is a type or not,
+            # continue to the next element if matched successfully
+            if matched:
+                continue
 
             # 2. Match with spacious
             if allow_spacious:
