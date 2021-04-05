@@ -4,7 +4,7 @@ from .element import Element
 
 from .parentheses import Parentheses
 from .delimiters import Delimiters
-# from .infixes import Infixes
+from .infixes import Infixes
 
 from .exceptions import NoMatch
 
@@ -48,8 +48,8 @@ class Lexer:
             if delimiters is None:
                 delimiters = Delimiters()
 
-            # if infixes is None:
-            #     infixes = Infixes()
+            if infixes is None:
+                infixes = Infixes()
 
         self.parentheses = parentheses
         self.delimiters = delimiters
