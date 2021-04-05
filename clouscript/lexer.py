@@ -27,20 +27,6 @@ class REMatcher:
         return (self.result.group(0), *self.result.groups())
 
 
-def lex(string):
-    """Segment string into elements"""
-
-    space = True
-    i = 0
-
-    while i < len(string):
-        # Set up the rest of the string for matching
-        m = REMatcher(string[i:])
-
-        if m.match:
-            pass
-
-
 class Lexer:
     """A lexer that """
 
