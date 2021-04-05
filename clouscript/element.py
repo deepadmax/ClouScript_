@@ -12,7 +12,7 @@ class Element:
         self.value = value
 
     def __repr__(self):
-        return f'{{{self.value}}}'
+        return f'{{{self.type} : {self.value}}}'
 
     def __eq__(self, other):
         """
