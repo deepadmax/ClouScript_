@@ -24,3 +24,7 @@ class InfixError(ParsingError):
 
 class UnmatchedInfix(InfixError):
     """Missing righthand or lefthand side element for infix"""
+
+class MismatchedParentheses(ParsingError):
+    """Attempting to close a section
+    with an incorrect right-hand parenthesis"""
