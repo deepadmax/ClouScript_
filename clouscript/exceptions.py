@@ -18,3 +18,9 @@ class NoMatch(LexingError):
 
 class ParsingError(ClouScriptException):
     """Elements are not compliant with parsing rules"""
+
+class InfixError(ParsingError):
+    """Problem with structuring infix functions"""
+
+class UnmatchedInfix(InfixError):
+    """Missing righthand or lefthand side element for infix"""
