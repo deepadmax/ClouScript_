@@ -16,8 +16,10 @@ class NoMatch(LexingError):
     """No lexing rule could be matched"""
 
 
+
 class ParsingError(ClouScriptException):
     """Elements are not compliant with parsing rules"""
+
 
 class InfixError(ParsingError):
     """Problem with structuring infix functions"""
@@ -25,6 +27,15 @@ class InfixError(ParsingError):
 class UnmatchedInfix(InfixError):
     """Missing righthand or lefthand side element for infix"""
 
-class MismatchedParentheses(ParsingError):
+
+class ParenthesisError(ParsingError):
     """Attempting to close a section
     with an incorrect right-hand parenthesis"""
+
+class MismatchedParentheses(ParenthesisError):
+    """Attempting to close a section
+    with an incorrect right-hand parenthesis"""
+
+class InvalidParenthesis(ParenthesisError):
+    """Element type is a valid parenthesis group
+    but the value is not a valid parenthesis"""
