@@ -1,11 +1,6 @@
 import re
 
 from .element import Element
-
-from .parentheses import Parentheses
-from .delimiters import Delimiters
-from .infixes import Infixes
-
 from .exceptions import NoMatch
 
 
@@ -43,12 +38,15 @@ class Lexer:
         
         if solids is None or spacious is None:
             if parentheses is None:
+                from .parentheses import Parentheses
                 parentheses = Parentheses()
 
             if delimiters is None:
+                from .delimiters import Delimiters
                 delimiters = Delimiters()
 
             if infixes is None:
+                from .infixes import Infixes
                 infixes = Infixes()
 
         self.parentheses = parentheses
