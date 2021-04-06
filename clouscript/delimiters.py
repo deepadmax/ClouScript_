@@ -121,6 +121,8 @@ class Delimiters:
 
     def segment(self, array):
         """Segment an array by delimiters"""
+        if not self.contains(array):
+            return array
         return self.segment_many(array, self.delimiters)
 
 
