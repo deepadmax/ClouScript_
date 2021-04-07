@@ -4,11 +4,9 @@ from .exceptions import MismatchedParentheses, InvalidParenthesis
 
 class Parser:
     def __init__(self, capsules=None, parentheses=None, delimiters=None, infixes=None):
-        """Capsules are names of parenthesis groups which are allowed
-        to connect with labels to form function calls.
-        """
-
-
+        # Capsules are parenthesis groups which are allowed
+        # to connect with labels to form function calls.
+        
         if capsules is None:
             capsules = ['ROUND']
 
@@ -34,12 +32,27 @@ class Parser:
     def parse(self, elements):
         """Parse an array of elements
         and generate an abstract syntax tree
-        
-        OBS! The top level doesn't get parsed properly,
-        so the code given should always be surrounded
-        by parentheses and have them removed afterward.
         """
 
+        # The top level does not get properly parsed,
+        # so the elements given should always be surrounded
+        # by parentheses and have them removed afterward
+
+        left_parenthesis = Element(
+            self.parentheses.groups[0],
+            self.parentheses.left[0]
+        )
+        
+        right_parenthesis = Element(
+            self.parentheses.groups[0],
+            self.parentheses.right[0]
+        )
+        
+        elements = [left_parenthesis] + elements + [right_parenthesis]
+
+
+        # Initialize stack to deal with navigating
+        # up and down parenthesized sections
         stack = [[]]
         
         # History of opened parenthese
@@ -60,7 +73,7 @@ class Parser:
 
                 # Close down the last opened section
                 # when a right-hand parenthesis is found
-                if e.value in self.parentheses.right:
+                elif e.value in self.parentheses.right:
                     # If the closing parenthesis does not match
                     # the type that was most recently opened,
                     # there has been a mismatch
@@ -107,5 +120,8 @@ class Parser:
                 stack[-1].append(e)
 
             i += 1
+
+        # Remove the section made from the dummy parentheses added at the start
+        stack[-1] = stack[-1][0].value
 
         return stack[-1]
