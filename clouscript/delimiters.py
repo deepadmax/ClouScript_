@@ -42,20 +42,20 @@ class Delimiters:
             return any(element == delimiter for element in array)
         return any(element in self for element in array)
 
-    def segment_single(self, array, delimiter):
+    def segment_single(self, elements, delimiter):
         """Segment an array by a specified delimiter"""
 
         sections = [[]]
 
 
-        if not self.contains(array, delimiter):
+        if not self.contains(elements, delimiter):
             raise MissingDelimiter(f'No instances of {delimiter} was found')
 
 
         # Separate the elements between delimiters
         # by starting a new list whenever a delimiter is encountered
-        for element in array:
-            if element == 'DELIMITER':
+        for element in elements:
+            if element == delimiter:
                 sections.append([])
             else:
                 sections[-1].append(element)
@@ -63,13 +63,13 @@ class Delimiters:
 
         # Raise error if there are empty sections and it is not allowed
         if not self.allow_empty_sections:
-            if not all(sections, key=len):
+            if not all(len(s) for s in sections):
                 raise EmptySection('Empty sections are not allowed')
 
 
         # Flatten sections depending on the specified mode
 
-        if self.flatten_mode == 'global' and max(sections, key=len) <= 1:
+        if self.flatten_mode == 'global' and len(max(sections, key=len)) <= 1:
             # Flatten all sections if there are no sections longer than one element
             for i, section in enumerate(sections):
                 if len(section) > 0:
@@ -89,17 +89,17 @@ class Delimiters:
 
         return sections
 
-    def segment_many(self, array, delimiters):
+    def segment_many(self, elements, delimiters):
         """Segment an array by multiple delimiters"""
 
         if len(delimiters) == 0:
-            return array
+            return elements
 
         # Segment array by priority
         
         for delimiter in delimiters:
             try:
-                array = self.segment_single(array, delimiter)
+                elements = self.segment_single(elements, delimiter)
             except MissingDelimiter:
                 # If the delimiter cannot be found
                 # do not attempt to segment any deeper
@@ -108,22 +108,22 @@ class Delimiters:
             # Do not attempt to segment any deeper
             # if there are no more delimiters left
             # or if the array is not long enough
-            if not delimiters[1:] or len(array) <= 1:
+            if not delimiters[1:] or len(elements) <= 1:
                 continue
 
             # For every element in the newly segmented array,
             # if one is a sequence, segment its parts
-            for i, element in enumerate(array):
+            for i, element in enumerate(elements):
                 if type(element) is Sequence:
-                    array[i] = Sequence(self.segment_many(element.value, delimiters[1:]))
+                    elements[i] = Sequence(self.segment_many(element.value, delimiters[1:]))
 
-        return array
+        return elements
 
-    def segment(self, array):
+    def segment(self, elements):
         """Segment an array by delimiters"""
-        if not self.contains(array):
-            return array
-        return self.segment_many(array, self.delimiters)
+        if not self.contains(elements):
+            return elements
+        return self.segment_many(elements, self.delimiters)
 
 
 class Sequence(Element):
