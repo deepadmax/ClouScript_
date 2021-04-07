@@ -106,6 +106,11 @@ class Parser:
                             # Use the value of the section as arguments
                             value = stack[-1][-1].value
 
+                            # If there is only one argument and it is a sequence,
+                            # use the array of it instead                            
+                            if type(value) is list and len(value) == 1 and value[0] == 'SEQUENCE':
+                                value = value[0].value
+
                             # Remove the original section element
                             stack[-1].pop(-1)
                             # Add the new function call element
