@@ -11,8 +11,17 @@ class Element:
         self.type = type_
         self.value = value
 
-    def __repr__(self):
-        return f'{{{self.type} : {self.value}}}'
+    def asstring(self, indent=0):
+        if type(self.value) in (list, tuple):
+            subelements = '\n'.join(
+                '  ' * indent + f'{element.asstring(indent=indent + 1)}'
+                for element in self.value
+            )
+
+
+            return f'<{self.type}>\n{subelements}'
+            
+        return f'<{self.type}: {self.value}>'
 
     def __eq__(self, other):
         """
