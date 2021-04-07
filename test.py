@@ -1,5 +1,4 @@
-from clouscript.lexer import Lexer
-from clouscript.element import Element
+import clouscript
 
 
 text = """doif (
@@ -22,5 +21,5 @@ text = """doif (
     )
 )"""
 
-lexer = Lexer()
-print(list(lexer.lex(text)))
+elements = clouscript.loads(text)
+print(elements)
