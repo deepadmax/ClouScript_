@@ -1,25 +1,14 @@
+from rich import print
+
 import clouscript
 
 
-text = """doif (
-    /* Three if-statements followed by an else-statement */
-    
-    CHANNEL.name == "General" (
-        3 + (1 * 2)
-    )
+text = """
+curse(true, 10)
+hearts(-1)
+""".strip()
 
-    USER has not 1235 (
-        statement2
-    )
-
-    USER is 4569 (
-        statement3
-    )
-    
-    ( 
-        statement4// This is the else-statement
-    )
-)"""
+print(f'{text}\n')
 
 elements = clouscript.loads(text)
-print(elements)
+print(elements.asstring())

@@ -1,3 +1,5 @@
+from rich import print
+
 from .element import Element
 from .exceptions import MismatchedParentheses, InvalidParenthesis
 
@@ -5,10 +7,12 @@ from .exceptions import MismatchedParentheses, InvalidParenthesis
 class Parser:
     def __init__(self, capsules=None, parentheses=None, delimiters=None, infixes=None):
         # Capsules are parenthesis groups which are allowed
-        # to connect with labels to form function calls.
+        # to connect with other elements to form function calls or the likes
         
         if capsules is None:
-            capsules = ['ROUND']
+            capsules = {
+                'ROUND': 'CALL'
+            }
 
         self.capsules = capsules
         
@@ -50,7 +54,6 @@ class Parser:
         
         elements = [left_parenthesis] + elements + [right_parenthesis]
 
-
         # Initialize stack to deal with navigating
         # up and down parenthesized sections
         stack = [[]]
@@ -86,6 +89,9 @@ class Parser:
 
                     section = stack[-1][-1]
 
+                    # Form capsule functions
+                    section = self.encapsulate(section)
+
                     # Form infix functions
                     section = self.infixes.structure(section)
 
@@ -94,27 +100,6 @@ class Parser:
                     
                     # Replace section with a section element
                     stack[-1][-1] = Element(e.type, section)
-
-                    
-                    # If the type of the section is a capsule,
-                    # it is intended for a function call
-                    if stack[-1][-1].type in self.capsules:
-                        # If the section is preceded by a label, encapsule the two
-                        if len(stack[-1]) > 1 and stack[-1][-2] == 'LABEL':
-                            # Use the value of the label as the type of function call
-                            type_ = stack[-1][-2].value
-                            # Use the value of the section as arguments
-                            value = stack[-1][-1].value
-
-                            # If there is only one argument and it is a sequence,
-                            # use the array of it instead                            
-                            if type(value) is list and len(value) == 1 and value[0] == 'SEQUENCE':
-                                value = value[0].value
-
-                            # Remove the original section element
-                            stack[-1].pop(-1)
-                            # Add the new function call element
-                            stack[-1][-1] = Element(type_, value)
 
                 else:
                     raise InvalidParenthesis('Parenthesis element found with invalid parenthesis')
@@ -129,4 +114,50 @@ class Parser:
         # Remove the section made from the dummy parentheses added at the start
         stack[-1] = stack[-1][0].value
 
-        return stack[-1]
+        # But put everything into an overarching code element
+        return Element('', stack[-1])
+
+    def encapsulate(self, elements):
+        """Group capsules with preceding elements to form function calls"""
+
+        # A capsule can not be preceded by an element
+        # if there is only one element
+        if len(elements) <= 1:
+            return elements
+
+        i = 1
+        while i < len(elements):
+            # If the type of the element is a capsule,
+            # it is intended for a function call.
+            # If the section is preceded by a label, encapsule the two
+            if elements[i].type in self.capsules:
+                # Use the value of the precedent as the function
+                function = elements[i - 1]
+                # Use the value of the section as arguments
+                value = elements[i]
+                
+                # Get the name for this type of encapsulation
+                name = self.capsules.get(value.type)
+
+                # If there is only one argument and it is a sequence,
+                # use the array of it instead                            
+                if type(value) in (list, tuple) and len(value) == 1 and value[0] == 'SEQUENCE':
+                    value = value[0].value
+
+                # If the value element is just a parenthesis group,
+                # extract and use the array instead
+                if value.type in self.parentheses.groups:
+                    value = value.value
+
+                if type(value) not in (list, tuple):
+                    value = [value]
+
+                # Add the new function call element
+                elements[i - 1] = Element(name, (function, *value))
+                # Remove the capsule element
+                elements.pop(i)
+
+            else:
+                i += 1
+
+        return elements

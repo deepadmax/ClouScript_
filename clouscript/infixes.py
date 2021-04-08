@@ -146,7 +146,7 @@ class Infixes:
 
                 # If the current highest priority is left-handed,
                 # after an element has been removed, move the rest 2 steps to the left
-                if highest_priority % 2 == 0:
+                if highest_priority % 2 == 1:
                     priority_indices = [i - 2 for i in priority_indices]
 
         return array
